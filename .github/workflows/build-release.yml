@@ -24,17 +24,13 @@ jobs:
           pip install -r requirements.txt
           pip uninstall torch torchvision -y
           pip install torch torchvision --index-url https://download.pytorch.org/whl/cu128
-
       - name: Create PyInstaller spec for Windows
         run: |
           $specContent = @"
-          $specContent = @'
           # -*- mode: python ; coding: utf-8 -*-
           import sys
           sys.setrecursionlimit(max(sys.getrecursionlimit(), 2000))
-
           block_cipher = None
-
           a = Analysis(
               ['app.py'],
               pathex=[],
@@ -65,18 +61,10 @@ jobs:
               cipher=block_cipher,
               noarchive=False,
           )
-
           pyz = PYZ(a.pure, cipher=block_cipher)
-
           exe = EXE(
               pyz,
               a.scripts,
-          
-          pyz = PYZ(a.zXdata, a.zdata, cipher=block_cipher)
-
-          exe = EXE(
-              pyz,
-              a.zscripts,
               [],
               exclude_binaries=True,
               name='Marpogi',
@@ -92,8 +80,6 @@ jobs:
               entitlements_file=None,
               icon='assets/favicon.ico',
           )
-
-          
           coll = COLLECT(
               exe,
               a.binaries,
@@ -105,9 +91,7 @@ jobs:
               name='Marpogi',
           )
           "@
-          '@@
           $specContent | Out-File -FilePath "Marpogi.spec" -Encoding utf8
-
       - name: Build with PyInstaller
         run: pyinstaller --clean --noconfirm Marpogi.spec
 
@@ -121,7 +105,6 @@ jobs:
           Copy-Item -Path "requirements.txt" -Destination $releaseDir
           Copy-Item -Path "README.md" -Destination $releaseDir
           Compress-Archive -Path "$releaseDir/*" -DestinationPath "dist/Marpogi-Windows.zip" -Force
-
       - name: Upload Windows artifact
         uses: actions/upload-artifact@v4
         with:
@@ -145,16 +128,13 @@ jobs:
           pip install -r requirements.txt
           pip uninstall torch torchvision -y
           pip install torch torchvision --index-url https://download.pytorch.org/whl/cu128
-
       - name: Create PyInstaller spec for Linux
         run: |
           cat > Marpogi.spec << 'EOF'
           # -*- mode: python ; coding: utf-8 -*-
           import sys
           sys.setrecursionlimit(max(sys.getrecursionlimit(), 2000))
-
           block_cipher = None
-
           a = Analysis(
               ['app.py'],
               pathex=[],
@@ -187,15 +167,9 @@ jobs:
           )
           
           pyz = PYZ(a.pure, cipher=block_cipher)
-
           exe = EXE(
               pyz,
               a.scripts,
-          pyz = PYZ(a.zXdata, a.zdata, cipher=block_cipher)
-
-          exe = EXE(
-              pyz,
-              a.zscripts,
               [],
               exclude_binaries=True,
               name='Marpogi',
@@ -222,7 +196,6 @@ jobs:
               name='Marpogi',
           )
           EOF
-
       - name: Build with PyInstaller
         run: pyinstaller --clean --noconfirm Marpogi.spec
 
@@ -238,7 +211,6 @@ jobs:
           chmod +x release/Marpogi-Linux/install.sh
           chmod +x release/Marpogi-Linux/run.sh
           tar -czvf dist/Marpogi-Linux.tar.gz -C release Marpogi-Linux
-
       - name: Upload Linux artifact
         uses: actions/upload-artifact@v4
         with:
