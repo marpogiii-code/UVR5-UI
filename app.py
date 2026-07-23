@@ -2374,7 +2374,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 M
             )
 
 app.launch(
-    share=args.share,
+    share=True,
     favicon_path="assets/favicon.ico",
     server_name="",
     server_port=args.listen_port,

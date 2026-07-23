@@ -23,12 +23,11 @@ jobs:
           pip install pyinstaller
           pip install -r requirements.txt
           pip uninstall torch torchvision -y
-          pip install torch torchvision --index-url https://download.pytorch.org/whl/cu128
+          pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
 
       - name: Create PyInstaller spec for Windows
         run: |
-          $specContent = @"
-          $specContent = @'
+          @'
           # -*- mode: python ; coding: utf-8 -*-
           import sys
           sys.setrecursionlimit(max(sys.getrecursionlimit(), 2000))
@@ -71,12 +70,6 @@ jobs:
           exe = EXE(
               pyz,
               a.scripts,
-          
-          pyz = PYZ(a.zXdata, a.zdata, cipher=block_cipher)
-
-          exe = EXE(
-              pyz,
-              a.zscripts,
               [],
               exclude_binaries=True,
               name='Marpogi',
@@ -93,7 +86,6 @@ jobs:
               icon='assets/favicon.ico',
           )
 
-          
           coll = COLLECT(
               exe,
               a.binaries,
@@ -104,9 +96,7 @@ jobs:
               upx_exclude=[],
               name='Marpogi',
           )
-          "@
-          '@@
-          $specContent | Out-File -FilePath "Marpogi.spec" -Encoding utf8
+          '@ | Out-File -FilePath "Marpogi.spec" -Encoding utf8
 
       - name: Build with PyInstaller
         run: pyinstaller --clean --noconfirm Marpogi.spec
@@ -144,11 +134,11 @@ jobs:
           pip install pyinstaller
           pip install -r requirements.txt
           pip uninstall torch torchvision -y
-          pip install torch torchvision --index-url https://download.pytorch.org/whl/cu128
+          pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
 
       - name: Create PyInstaller spec for Linux
         run: |
-          cat > Marpogi.spec << 'EOF'
+          cat > Marpogi.spec << 'SPECEOF'
           # -*- mode: python ; coding: utf-8 -*-
           import sys
           sys.setrecursionlimit(max(sys.getrecursionlimit(), 2000))
@@ -191,11 +181,6 @@ jobs:
           exe = EXE(
               pyz,
               a.scripts,
-          pyz = PYZ(a.zXdata, a.zdata, cipher=block_cipher)
-
-          exe = EXE(
-              pyz,
-              a.zscripts,
               [],
               exclude_binaries=True,
               name='Marpogi',
@@ -221,7 +206,7 @@ jobs:
               upx_exclude=[],
               name='Marpogi',
           )
-          EOF
+          SPECEOF
 
       - name: Build with PyInstaller
         run: pyinstaller --clean --noconfirm Marpogi.spec
