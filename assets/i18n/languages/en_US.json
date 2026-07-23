@@ -1,6 +1,5 @@
 {
-    "If you like UVR5 UI you can star my repo on [GitHub](https://github.com/Eddycrack864/UVR5-UI)": "If you like UVR5 UI you can star my repo on [GitHub](https://github.com/Eddycrack864/UVR5-UI)",
-    "Try UVR5 UI on Hugging Face with A100 [here](https://huggingface.co/spaces/TheStinger/UVR5_UI)": "Try UVR5 UI on Hugging Face with A100 [here](https://huggingface.co/spaces/TheStinger/UVR5_UI)",
+    "Audio source separation powered by advanced AI models.": "Audio source separation powered by advanced AI models.",
     "Select the model": "Select the model",
     "Select the output format": "Select the output format",
     "Overlap": "Overlap",
@@ -68,7 +67,7 @@
     "List filter": "List filter",
     "Filter and sort the model list by stem": "Filter and sort the model list by stem",
     "Show list!": "Show list!",
-    "Language have been saved. Restart UVR5 UI to apply the changes": "Language have been saved. Restart UVR5 UI to apply the changes",
+    "Language have been saved. Restart Marpogi to apply the changes": "Language have been saved. Restart Marpogi to apply the changes",
     "Error reading main config file": "Error reading main config file",
     "Error writing to main config file": "Error writing to main config file",
     "Error reading settings file": "Error reading settings file",
