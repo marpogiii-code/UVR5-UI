@@ -57,7 +57,7 @@ You can also try it on HuggingFace Spaces running with Zero GPU (A100)!
 Clone the repository (git needed) or download the source code of the latest release [here](https://github.com/marpogiii-code/UVR5-UI/releases)
 
 ```
-git clone https://github.com/Eddycrack864/UVR5-UI.git
+git clone https://github.com/marpogiii-code/UVR5-UI.git
 ```
 
 Then continue with the steps described below
