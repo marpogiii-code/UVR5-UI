@@ -28,6 +28,7 @@ jobs:
       - name: Create PyInstaller spec for Windows
         run: |
           $specContent = @"
+          $specContent = @'
           # -*- mode: python ; coding: utf-8 -*-
           import sys
           sys.setrecursionlimit(max(sys.getrecursionlimit(), 2000))
@@ -70,6 +71,12 @@ jobs:
           exe = EXE(
               pyz,
               a.scripts,
+          
+          pyz = PYZ(a.zXdata, a.zdata, cipher=block_cipher)
+
+          exe = EXE(
+              pyz,
+              a.zscripts,
               [],
               exclude_binaries=True,
               name='Marpogi',
@@ -86,6 +93,7 @@ jobs:
               icon='assets/favicon.ico',
           )
 
+          
           coll = COLLECT(
               exe,
               a.binaries,
@@ -97,6 +105,7 @@ jobs:
               name='Marpogi',
           )
           "@
+          '@@
           $specContent | Out-File -FilePath "Marpogi.spec" -Encoding utf8
 
       - name: Build with PyInstaller
@@ -182,6 +191,11 @@ jobs:
           exe = EXE(
               pyz,
               a.scripts,
+          pyz = PYZ(a.zXdata, a.zdata, cipher=block_cipher)
+
+          exe = EXE(
+              pyz,
+              a.zscripts,
               [],
               exclude_binaries=True,
               name='Marpogi',
