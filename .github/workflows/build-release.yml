@@ -1,0 +1,265 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          pip install pyinstaller
+          pip install -r requirements.txt
+          pip uninstall torch torchvision -y
+          pip install torch torchvision --index-url https://download.pytorch.org/whl/cu128
+
+      - name: Create PyInstaller spec for Windows
+        run: |
+          $specContent = @'
+          # -*- mode: python ; coding: utf-8 -*-
+          import sys
+          sys.setrecursionlimit(max(sys.getrecursionlimit(), 2000))
+
+          block_cipher = None
+
+          a = Analysis(
+              ['app.py'],
+              pathex=[],
+              binaries=[],
+              datas=[
+                  ('assets', 'assets'),
+                  ('models', 'models'),
+                  ('inputs', 'inputs'),
+                  ('outputs', 'outputs'),
+                  ('ytdl', 'ytdl'),
+                  ('info', 'info'),
+              ],
+              hiddenimports=[
+                  'gradio',
+                  'audio_separator',
+                  'yt_dlp',
+                  'pypresence',
+                  'assets.themes.loadThemes',
+                  'assets.i18n.i18n',
+                  'assets.presence.discord_presence',
+              ],
+              hookspath=[],
+              hooksconfig={},
+              runtime_hooks=[],
+              excludes=[],
+              win_no_prefer_redirects=False,
+              win_private_assemblies=False,
+              cipher=block_cipher,
+              noarchive=False,
+          )
+          
+          pyz = PYZ(a.zXdata, a.zdata, cipher=block_cipher)
+
+          exe = EXE(
+              pyz,
+              a.zscripts,
+              [],
+              exclude_binaries=True,
+              name='Marpogi',
+              debug=False,
+              bootloader_ignore_signals=False,
+              strip=False,
+              upx=True,
+              console=True,
+              disable_windowed_traceback=False,
+              argv_emulation=False,
+              target_arch=None,
+              codesign_identity=None,
+              entitlements_file=None,
+              icon='assets/favicon.ico',
+          )
+          
+          coll = COLLECT(
+              exe,
+              a.binaries,
+              a.zipfiles,
+              a.datas,
+              strip=False,
+              upx=True,
+              upx_exclude=[],
+              name='Marpogi',
+          )
+          '@@
+          $specContent | Out-File -FilePath "Marpogi.spec" -Encoding utf8
+
+      - name: Build with PyInstaller
+        run: pyinstaller --clean --noconfirm Marpogi.spec
+
+      - name: Create Windows package structure
+        run: |
+          $releaseDir = "release/Marpogi-Windows"
+          New-Item -ItemType Directory -Force -Path $releaseDir
+          Copy-Item -Path "dist/Marpogi/*" -Destination $releaseDir -Recurse
+          Copy-Item -Path "UVR5-UI-installer.bat" -Destination "$releaseDir/install.bat"
+          Copy-Item -Path "run-UVR5-UI.bat" -Destination "$releaseDir/run.bat"
+          Copy-Item -Path "requirements.txt" -Destination $releaseDir
+          Copy-Item -Path "README.md" -Destination $releaseDir
+          Compress-Archive -Path "$releaseDir/*" -DestinationPath "dist/Marpogi-Windows.zip" -Force
+
+      - name: Upload Windows artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Marpogi-Windows
+          path: dist/Marpogi-Windows.zip
+
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          pip install pyinstaller
+          pip install -r requirements.txt
+          pip uninstall torch torchvision -y
+          pip install torch torchvision --index-url https://download.pytorch.org/whl/cu128
+
+      - name: Create PyInstaller spec for Linux
+        run: |
+          cat > Marpogi.spec << 'EOF'
+          # -*- mode: python ; coding: utf-8 -*-
+          import sys
+          sys.setrecursionlimit(max(sys.getrecursionlimit(), 2000))
+
+          block_cipher = None
+
+          a = Analysis(
+              ['app.py'],
+              pathex=[],
+              binaries=[],
+              datas=[
+                  ('assets', 'assets'),
+                  ('models', 'models'),
+                  ('inputs', 'inputs'),
+                  ('outputs', 'outputs'),
+                  ('ytdl', 'ytdl'),
+                  ('info', 'info'),
+              ],
+              hiddenimports=[
+                  'gradio',
+                  'audio_separator',
+                  'yt_dlp',
+                  'pypresence',
+                  'assets.themes.loadThemes',
+                  'assets.i18n.i18n',
+                  'assets.presence.discord_presence',
+              ],
+              hookspath=[],
+              hooksconfig={},
+              runtime_hooks=[],
+              excludes=[],
+              win_no_prefer_redirects=False,
+              win_private_assemblies=False,
+              cipher=block_cipher,
+              noarchive=False,
+          )
+          
+          pyz = PYZ(a.zXdata, a.zdata, cipher=block_cipher)
+
+          exe = EXE(
+              pyz,
+              a.zscripts,
+              [],
+              exclude_binaries=True,
+              name='Marpogi',
+              debug=False,
+              bootloader_ignore_signals=False,
+              strip=False,
+              upx=True,
+              console=True,
+              disable_windowed_traceback=False,
+              argv_emulation=False,
+              target_arch=None,
+              codesign_identity=None,
+              entitlements_file=None,
+          )
+          
+          coll = COLLECT(
+              exe,
+              a.binaries,
+              a.zipfiles,
+              a.datas,
+              strip=False,
+              upx=True,
+              upx_exclude=[],
+              name='Marpogi',
+          )
+          EOF
+
+      - name: Build with PyInstaller
+        run: pyinstaller --clean --noconfirm Marpogi.spec
+
+      - name: Create Linux package structure
+        run: |
+          mkdir -p release/Marpogi-Linux
+          cp -r dist/Marpogi/* release/Marpogi-Linux/
+          cp UVR5-UI-installer.sh release/Marpogi-Linux/install.sh
+          cp run-UVR5-UI.sh release/Marpogi-Linux/run.sh
+          cp requirements.txt release/Marpogi-Linux/
+          cp README.md release/Marpogi-Linux/
+          chmod +x release/Marpogi-Linux/Marpogi
+          chmod +x release/Marpogi-Linux/install.sh
+          chmod +x release/Marpogi-Linux/run.sh
+          tar -czvf dist/Marpogi-Linux.tar.gz -C release Marpogi-Linux
+
+      - name: Upload Linux artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Marpogi-Linux
+          path: dist/Marpogi-Linux.tar.gz
+
+  release:
+    needs: [build-windows, build-linux]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: write
+    steps:
+      - name: Download Windows artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: Marpogi-Windows
+          path: artifacts
+
+      - name: Download Linux artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: Marpogi-Linux
+          path: artifacts
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref }}
+          name: Marpogi ${{ github.ref }}
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          files: |
+            artifacts/Marpogi-Windows.zip
+            artifacts/Marpogi-Linux.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
