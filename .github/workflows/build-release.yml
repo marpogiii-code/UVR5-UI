@@ -65,11 +65,11 @@ jobs:
               noarchive=False,
           )
           
-          pyz = PYZ(a.zXdata, a.zdata, cipher=block_cipher)
+          pyz = PYZ(a.pure, a.binaries, cipher=block_cipher)
 
           exe = EXE(
               pyz,
-              a.zscripts,
+              a.scripts,
               [],
               exclude_binaries=True,
               name='Marpogi',
@@ -177,11 +177,11 @@ jobs:
               noarchive=False,
           )
           
-          pyz = PYZ(a.zXdata, a.zdata, cipher=block_cipher)
+          pyz = PYZ(a.pure, a.binaries, cipher=block_cipher)
 
           exe = EXE(
               pyz,
-              a.zscripts,
+              a.scripts,
               [],
               exclude_binaries=True,
               name='Marpogi',
