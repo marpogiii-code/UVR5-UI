@@ -27,6 +27,7 @@ jobs:
 
       - name: Create PyInstaller spec for Windows
         run: |
+          $specContent = @"
           $specContent = @'
           # -*- mode: python ; coding: utf-8 -*-
           import sys
@@ -64,6 +65,12 @@ jobs:
               cipher=block_cipher,
               noarchive=False,
           )
+
+          pyz = PYZ(a.pure, cipher=block_cipher)
+
+          exe = EXE(
+              pyz,
+              a.scripts,
           
           pyz = PYZ(a.zXdata, a.zdata, cipher=block_cipher)
 
@@ -85,6 +92,7 @@ jobs:
               entitlements_file=None,
               icon='assets/favicon.ico',
           )
+
           
           coll = COLLECT(
               exe,
@@ -96,6 +104,7 @@ jobs:
               upx_exclude=[],
               name='Marpogi',
           )
+          "@
           '@@
           $specContent | Out-File -FilePath "Marpogi.spec" -Encoding utf8
 
@@ -177,6 +186,11 @@ jobs:
               noarchive=False,
           )
           
+          pyz = PYZ(a.pure, cipher=block_cipher)
+
+          exe = EXE(
+              pyz,
+              a.scripts,
           pyz = PYZ(a.zXdata, a.zdata, cipher=block_cipher)
 
           exe = EXE(
