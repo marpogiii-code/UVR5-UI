@@ -59,8 +59,27 @@ if __name__ == "__main__":
        "--open",
        action="store_true",
        help="Automatically open the interface in the default web browser"
-    )   
+    )
+    parser.add_argument(
+       "--discord",
+       action="store_true",
+       default=True,
+       help="Enable Discord Rich Presence (default: enabled)"
+    )
+    parser.add_argument(
+       "--no-discord",
+       action="store_true",
+       help="Disable Discord Rich Presence"
+    )
     args = parser.parse_args()
+
+    # Set discord presence based on command line args
+    discord_enabled = args.discord and not args.no_discord
+    with open(config_file, "r", encoding="utf8") as f:
+        config = json.load(f)
+    config["discord_presence"] = discord_enabled
+    with open(config_file, "w", encoding="utf8") as f:
+        json.dump(config, f, indent=2)
 
 #=========================#
 #     Roformer Models     #

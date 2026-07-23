@@ -101,10 +101,10 @@ class RichPresenceManager:
                 config = self.get_presence_config(self.current_state)
                 self.rpc.update(
                     state=self.current_state,
-                    details="Ultimate Vocal Remover 5 Gradio UI",
-                    buttons=[{"label": "Download", "url": "https://github.com/Eddycrack864/UVR5-UI"}],
+                    details="Marpogi - Audio Source Separation",
+                    buttons=[{"label": "Download", "url": "https://github.com/marpogiii-code/UVR5-UI"}],
                     large_image="logo",
-                    large_text="Separating tracks with UVR5 UI",
+                    large_text="Separating tracks with Marpogi",
                     small_image=config["small_image"],
                     small_text=config["small_text"],
                     start=dt.datetime.now().timestamp(),

@@ -5,7 +5,7 @@
     "mode": "dark"
   },
   "lang": {
-    "override": false,
+    "override": true,
     "selected_lang": "en_US"
   },
   "discord_presence": true,
